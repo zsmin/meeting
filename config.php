@@ -25,6 +25,9 @@
 				9 => array('start'=>'18:00', 'end'=>'19:00', 'type'=>'night'),
 				10 => array('start'=>'19:00', 'end'=>'', 'type'=>'night'),
 		);
+
+	$hour_arr	= array('09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22');
+	$minute_arr = array('00', '30');
 	
 	$room_type_a = "A";
 	$room_type_b = "B";

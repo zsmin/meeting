@@ -74,20 +74,27 @@ a.btn{
 	color: #5a8712;
 }
 #idTableList td.room{
-
+	cursor:pointer;
 }
-
-#idAddRoom{
+#idAddRoom, #idMeetingDesc{
 	position:absolute;
+	background-color:#fff;
+	border-radius:5px;
+	display:none;
+}
+#idAddRoom{
+	border:2px solid #8397bb;
 	top:200px;
 	left:250px;
-	background-color:#fff;
-	border:2px solid #8397bb;
-	border-radius:5px;
 	width:400px;
 	height:220px;
 	padding:30px;
-	display:none;
+}
+#idMeetingDesc{
+	border:1px solid #8397bb;
+	width:180px;
+	height:50px;
+	padding:8px;
 }
 .tb-type2{
 	margin-left: 40px;
@@ -118,6 +125,10 @@ a.btn{
 	padding: 0 13px;
 	line-height: 30px;
 	font-size: 12px;
+}
+h4{
+	font-size:14px;
+	height:25px;
 }
 </style>
 
@@ -163,11 +174,11 @@ a.btn{
 						B区<br>
 					</td>
 				</tr>
-				<tr class="strong">
+				<tr class="strong room_title">
 					<?php
-						foreach( $output['rooms_arr'] as $room ){
-							echo '<td style="word-break: break-all;" align="center">';
-							echo $room['name'] . "<br /><span style='font-size:12px; font-weight:normal;'>(" . $room['position'] . ")<span>";
+						foreach( $output['rooms_arr'] as $room_id=>$room ){
+							echo '<td style="word-break: break-all;" align="center" room_id="' . $room_id . '">';
+							echo '<span>' . $room['name'] . "</span><br /><span style='font-size:12px; font-weight:normal;'>(" . $room['position'] . ")<span>";
 							echo '</td>';
 						}
 					?>
@@ -178,12 +189,13 @@ a.btn{
 						$part_full_start = $output['current_day'] . ' ' . $part_time['start'] . ':00';
 						$part_full_end	= $output['current_day'] . ' ' . $part_time['end'] . ':00';
 						echo '<tr>';
-							echo '<td class="strong" style="word-break: break-all; width:170px;" align="center">';
+							echo '<td class="strong" style="word-break: break-all; width:170px;" align="center" start="' . $part_time['start'] . '" end="' . $part_time['end'] . '">';
 								echo $time_pre[$part_time['type']] . $part_time['start'] . '-' . ($part_time['end'] ? $part_time['end'] : '?');
 							echo '</td>';
 								foreach( $output['rooms_arr'] as $room_no=>$room ){
 									$flag_name = '';
 									$flag_bg_color = '';
+									$period_time = '';
 									if ( $lists[$room_no] ) {
 										foreach( $lists[$room_no] as $room_lists ){
 											$db_start = $room_lists['start_time'];
@@ -197,11 +209,12 @@ a.btn{
 												) {
 												$flag_name = $room_lists['name'];
 												$flag_bg_color = 'bg_color';
+												$period_time = substr($db_start, 11, 5) . '至' . substr($db_end, 11, 5);
 												continue;
 											}
 										}
 									}
-									echo '<td width="143" valign="top" class="room ' . $flag_bg_color . '">&nbsp;' . $flag_name . '</td>';
+									echo '<td width="143" valign="top" nctype="room" class="room ' . $flag_bg_color . '" time="'.$period_time.'">' . $flag_name . '</td>';
 								}
 						echo '</tr>';
 					}
@@ -229,7 +242,8 @@ a.btn{
 				</tr>
 				<tr height="30">
 				  <td class="required"><label for="parent_id">会议室列表：</label></td>
-				  <td class="vatop rowform"><select name="room" id="idRoom">
+				  <td class="vatop rowform">
+					<select name="room" id="idRoom">
 					  <option value="0">请选择会议室</option>
 					  <?php
 						foreach( $output['rooms_arr'] as $k=>$room ){
@@ -244,24 +258,18 @@ a.btn{
 				  <td class="vatop rowform">
 					<input type="text" value="<?php echo substr($output['current_day'], 0, 10); ?>" name="start" id="idStart" class="txt" style="width:90px" onFocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" />
 					<select name="start_hour" id="idStartHour">
-						<option value="09">09</option>
-						<option value="10">10</option>
-						<option value="11">11</option>
-						<option value="12">12</option>
-						<option value="13">13</option>
-						<option value="14">14</option>
-						<option value="15">15</option>
-						<option value="16">16</option>
-						<option value="17">17</option>
-						<option value="18">18</option>
-						<option value="19">19</option>
-						<option value="20">20</option>
-						<option value="21">21</option>
-						<option value="22">22</option>
+					<?php
+						if ( $output['hour_arr'] ) {
+							foreach ( $output['hour_arr'] as $hour ) echo '<option value="' . $hour . '">' . $hour . '</option>';
+						}
+					?>
 					</select>
 					<select name="start_minute" id="idStartMinute">
-						<option value="00">00</option>
-						<option value="30">30</option>
+					<?php
+						if ( $output['minute_arr'] ) {
+							foreach ( $output['minute_arr'] as $minute ) echo '<option value="' . $minute . '">' . $minute . '</option>';
+						}
+					?>
 					</select>
 				  </td>
 				</tr>
@@ -270,24 +278,18 @@ a.btn{
 				  <td class="vatop rowform">
 					<input type="text" value="<?php echo substr($output['current_day'], 0, 10); ?>" name="end" id="idEnd" class="txt" style="width:90px" onFocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" />
 					<select name="end_hour" id="idEndHour">
-						<option value="09">09</option>
-						<option value="10">10</option>
-						<option value="11">11</option>
-						<option value="12">12</option>
-						<option value="13">13</option>
-						<option value="14">14</option>
-						<option value="15">15</option>
-						<option value="16">16</option>
-						<option value="17">17</option>
-						<option value="18">18</option>
-						<option value="19">19</option>
-						<option value="20">20</option>
-						<option value="21">21</option>
-						<option value="22">22</option>
+					<?php
+						if ( $output['hour_arr'] ) {
+							foreach ( $output['hour_arr'] as $hour ) echo '<option value="' . $hour . '">' . $hour . '</option>';
+						}
+					?>
 					</select>
 					<select name="end_minute" id="idEndMinute">
-						<option value="00">00</option>
-						<option value="30">30</option>
+					<?php
+						if ( $output['minute_arr'] ) {
+							foreach ( $output['minute_arr'] as $minute ) echo '<option value="' . $minute . '">' . $minute . '</option>';
+						}
+					?>
 					</select>
 				  </td>
 				</tr>
@@ -304,9 +306,55 @@ a.btn{
 		</form>
 	</div>
 </div>
-<script type="text/javascript">
 
+<div id="idMeetingDesc">
+	<h4></h4>
+	<p></p>
+</div>
+<script type="text/javascript">
 $(function(){
+	$('td[nctype="room"]').mouseenter(function(e){
+		if ( !$(this).html() ) return;
+		var my_index	= $(this).index();
+		var room_name	= $(this).parent().siblings(".room_title").children().eq(my_index - 1).children().eq(0).html();
+		var period_time	= $(this).attr("time");
+		var period_time	= "<strong>会议时间：</strong>" + period_time;
+		display_desc = setTimeout(function() {
+			e = e || window.event; 
+			var mousePos = mouseCoords(e);
+			$("#idMeetingDesc").children("h4").html(room_name);
+			$("#idMeetingDesc").children("p").html(period_time);
+			$("#idMeetingDesc").css("top", mousePos.y - 8);
+			$("#idMeetingDesc").css("left", mousePos.x + 8);
+			$("#idMeetingDesc").css("display", "block");
+		}, 100);
+	}).mouseleave(function(){
+		$("#idMeetingDesc").css("display", "none");
+		clearTimeout( display_desc );
+	});
+	$('td[nctype="room"]').dblclick(function(){
+		if ( $(this).html() ) return;
+		var my_index = $(this).index();
+		var room_id = $(this).parent().siblings(".room_title").children().eq(my_index - 1).attr("room_id");
+
+		var time_start	= $(this).parent().children("td:first-child").attr("start");
+		var time_end	= $(this).parent().children("td:first-child").attr("end");
+		var time_starts = time_start.split(":");
+		var time_ends	= time_end.split(":");
+		var time_start_h= time_starts[0];
+		var time_start_m= time_starts[1];
+		var time_end_h	= time_ends[0];
+		var time_end_m	= time_ends[1];
+		if ( !time_end ) time_end_h = parseInt(time_start_h) + 1;
+
+		$("#idRoom").val(room_id);
+		$("#idStartHour").val(time_start_h);
+		$("#idStartMinute").val(time_start_m);
+		$("#idEndHour").val(time_end_h);
+		$("#idEndMinute").val(time_end_m);
+
+		$("#idAddRoom").css("display", "block");
+	});
 	$('a[nctype="show_add_room"]').click(function(){
 		$("#idAddRoom").css("display", "block");
 	});
@@ -324,12 +372,6 @@ $(function(){
 			return;
 		} else if ( room == 0 ) {
 			$('#idAddNotice').text('请先选择会议室');
-			return;
-		} else if ( !start ) {
-			$('#idAddNotice').text('请设置会议开始时间');
-			return;
-		} else if ( !end ) {
-			$('#idAddNotice').text('请设置会议结束时间');
 			return;
 		} else if ( start == end ) {
 			$('#idAddNotice').text('会议的开始时间跟结束时间不能相同');
@@ -368,6 +410,15 @@ $(function(){
 $('#idTableList tr:even').find('td').addClass('even')
 $('#idTableList tr:eq(2)').find('td').css({'background':'#66a3d5','color':'#fff','font-weight':'bold'})
 });
+function mouseCoords(ev) { 
+	if(ev.pageX || ev.pageY){ 
+		return {x:ev.pageX, y:ev.pageY}; 
+	}
+	return{
+		x:ev.clientX + document.body.scrollLeft - document.body.clientLeft, 
+		y:ev.clientY + document.body.scrollTop - document.body.clientTop 
+	}; 
+} 
 </script>
 </body>
 </html>

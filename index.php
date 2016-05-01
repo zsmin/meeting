@@ -76,6 +76,9 @@
 		$lists[$room_no][] = $row;
     }
 
+	$output['hour_arr']		= $hour_arr;
+	$output['minute_arr']	= $minute_arr;
+
 	if ( $view ) require_once('./tpl/' . $view . '.php');
 
 ?>
