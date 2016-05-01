@@ -43,8 +43,8 @@
 					'server' => 'localhost',
 					'port' => '3306',
 					'user' => 'root',
-					'pass' => 'boc2009!@#',
-					'database' => 'xyy_qj',
-					'table' => 'boc_meeting_scheduled',
+					'pass' => '123456',
+					'database' => 'project',
+					'table' => 'bd_meeting_scheduled',
 			);
 ?>

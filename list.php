@@ -31,7 +31,7 @@
 					$flag_del = true;
 
 				} else if ( $meeting_name ){		//可以删除自己添加的栏目
-					$sql = 'select name from boc_meeting_scheduled where id=' . $id;
+					$sql = 'select name from ' . $db_config['table'] . ' where id=' . $id;
 					$r = mysql_query($sql);
 					$r = mysql_fetch_row($r);
 
@@ -40,7 +40,7 @@
 				}
 
 				if ( $flag_del ) {
-					$sql = 'update boc_meeting_scheduled set display="F" where id=' . $id;
+					$sql = 'update ' . $db_config['table'] . ' set display="F" where id=' . $id;
 					$r_state = mysql_query($sql);
 				}
 
@@ -71,7 +71,7 @@
 
 	$page_size = 20;
 
-	$sql_total = "select count(*) from boc_meeting_scheduled where display='T'";
+	$sql_total = "select count(*) from " . $db_config['table'] . " where display='T'";
 
 	$r = mysql_query($sql_total);
 	$r = mysql_fetch_row($r);
@@ -81,7 +81,7 @@
 	if ( !$page ) $page = 1;
 	$limit = " limit " . ( $page-1 ) * $page_size . ", " . $page_size;
 
-	$sql = "select * from boc_meeting_scheduled where display='T' order by id desc" . $limit;
+	$sql = "select * from " . $db_config['table'] . " where display='T' order by id desc" . $limit;
 
 	$result = mysql_query($sql);
 	

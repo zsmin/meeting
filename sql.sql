@@ -1,4 +1,4 @@
-CREATE TABLE `boc_meeting_scheduled` (
+CREATE TABLE `bd_meeting_scheduled` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(32) NOT NULL default '' COMMENT '预订人',
   `room_no` int(11) NOT NULL default '0' COMMENT '会议室编号',

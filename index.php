@@ -29,7 +29,7 @@
 				mysql_query("SET NAMES 'UTF8'");
 				mysql_select_db( $db_config['database'], $link );
 
-				$sql_ck = "select id from boc_meeting_scheduled where room_no=$room and ( ('$start'>=start_time and '$end'<=end_time) or ('$start'<=start_time and '$end'>start_time) or ('$start'<end_time and '$end'>=end_time) or ('$start'<=start_time and '$end'>=end_time) )";
+				$sql_ck = "select id from " . $db_config['table'] . " where room_no=$room and ( ('$start'>=start_time and '$end'<=end_time) or ('$start'<=start_time and '$end'>start_time) or ('$start'<end_time and '$end'>=end_time) or ('$start'<=start_time and '$end'>=end_time) )";
 
 				$r = mysql_query($sql_ck);
 				$r = mysql_fetch_row($r);
@@ -39,7 +39,7 @@
 					exit;
 				}
 
-				$sql = "insert into boc_meeting_scheduled (name, room_no, room_date, start_time, end_time, display) values('$name', $room, '$room_date', '$start', '$end', 'T')";
+				$sql = "insert into " . $db_config['table'] . " (name, room_no, room_date, start_time, end_time, display) values('$name', $room, '$room_date', '$start', '$end', 'T')";
 
 				$r = mysql_query($sql);
 
@@ -61,7 +61,7 @@
 	if ( empty($current_day) ) $current_day = $output['today'];
 	$output['current_day'] = $current_day;
 
-	$sql = "select * from boc_meeting_scheduled where room_date='$current_day' and display='T'";
+	$sql = "select * from " . $db_config['table'] . " where room_date='$current_day' and display='T'";
 
 	$link = mysql_connect($db_config['server'], $db_config['user'], $db_config['pass'])
 		or die("Could not connect: " . mysql_error());
